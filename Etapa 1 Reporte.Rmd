@@ -1,0 +1,143 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+Gil Brandon García Contreras - A01254164
+
+Fernando Emilio Soto Gallegos - A01641995
+
+Jorge Eduardo Varela Muñiz - A01384569
+
+Maximo Cruz Olvera - a01723622
+
+Introducción
+
+En el contexto actual del cambio climático y la creciente demanda energética, la adaptación hacia un modelo de energía sustentable se ha vuelto una prioridad a nivel global. La energía sustentable se define como aquella que satisface la demanda de energía en las actividades del ser humano sin comprometer su riesgo de caducidad o agotamiento en el tiempo (Quartux, s.f.).  Algunos ejemplos de energías sustentables son la solar, eólica, hidroeléctrica y biomasa, siendo que estas representan alternativas viables frente a los combustibles fósiles. Esta transición no sólo busca reducir las emisiones de gases de efecto invernadero, sino también promover un acceso equitativo y sin limitaciones de la energía, un aspecto clave para el desarrollo económico y social.
+
+En las últimas décadas, las energías renovables se han posicionado como una solución clave frente a la crisis climática global y la creciente demanda energética. A medida que los efectos del cambio climático se intensifican, gobiernos, industrias y ciudadanos han comenzado a apostar por fuentes de energía limpias, seguras y sostenibles. De acuerdo con Statistica (2024), en 2023 más de 545.000 millones de dólares estadounidenses fueron destinados al desarrollo de este sector, llevando así a una inversión global en energías limpias de hasta un 90%. Esta tendencia no solo fomenta un papel clave en la construcción de sostenibilidad medioambiental, sino apoya a la reducción de costos de las mismas tecnologías, lo cual ha hecho más viable su implementación a gran escala.
+
+
+Según datos de Ecología Digital (s.f.), la capacidad instalada global de energía solar alcanzó los 1.000 GW, mientras que la eólica superó los 900 GW en 2022, cifras que continúan creciendo cada año. Esta evolución se debe, en parte, a políticas públicas, subsidios y a una creciente concientización sobre la necesidad de una transición energética justa. La Organización de las Naciones Unidas (ONU) resalta que, si se mantienen los compromisos actuales y se aumenta la ambición climática, las energías renovables podrían abastecer hasta el 65% de la electricidad mundial para el año 2030, lo que significaría un avance fundamental hacia un mundo con cero emisiones netas.
+
+
+No obstante, como señala Data Center Dynamics (2024), la expansión de estas energías aún enfrenta desafíos como la necesidad de mejorar la infraestructura, incorporar de manera eficaz las tecnologías emergentes y superar las limitaciones en contra regularizaciones favorables. En este contexto, las energías renovables no solo son una opción más ecológica, sino también una gran oportunidad para cambiar la forma en que producimos y usamos la energía, buscando que sea más justa, resistente y buena para el planeta.
+
+Metodologia
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(scipen=999)
+M = read.csv("G106-datos05-1.csv") 
+str(M)
+```
+```{r, include=FALSE}
+table(M$entidad)
+```
+```{r, include=FALSE}
+names (M) 
+summary(M)
+```
+```{r, include=FALSE}
+R1 = c("Australia", "Samoa", "Papua New Guinea")
+R2 = c("Cuba", "Jamiaca", "Trinidad and Tobago")
+region = ifelse(M$entidad %in% R1, "Oceania", "Caribe")
+M1 = cbind(M, region)
+library(dplyr) 
+M1 = select(M1, "entidad", "region", "electrd_fosiles", ,"electrd_nuclear", "electrd_de_energ_renov", "crecimiento_PIB", "emisiones_CO2", "densidad_pobl_Km2", "consumo_energ_prim", "superficie") 
+M1 = M1[-1]
+M1 = na.omit(M1) 
+str(M1)
+write.csv(M1, "datosEq5.csv", row.names = FALSE)
+```
+``` {r}
+R1 = subset(M1, M1$region == "Oceania")[-1]
+R2 = subset(M1, M1$region == "Caribe")[-1]
+cat("Principales Medias Oceania", "\n")
+summary(R1) 
+```
+``` {r, include=FALSE}
+cat("\n", "Desviación estándar", "\n")
+apply(R1,2, sd)
+cat("\n", "Rango Medio", "\n")
+Rm = function(x)((max(x)+min(x))/2)
+apply(R1, 2, Rm) 
+```
+``` {r}
+cat("Principales Medias Caribe", "\n")
+summary(R2) 
+```
+
+Relacionando ambos resultados podemos llegar a conclusiones muy interesantes de las dos bases de datos. Por ejemplo, podemos notar que ninguna de los dos conjuntos cuenta con un dato para la energia nuclear, por lo que podemos inferir que ambas regionens no cuentan con actividad nuclear por lo que la variable es innecesaria y puede ser descartada. Tambien, podemos notar un gran cambio en la superficie de ambos sets de datos. Esto representa que Oceania en este caso tiene una superficie mucho mayor, por lo que nos conviene en el futuro trabajar con porcentajes para poder tener resultado mas cercanos entre ambas. 
+
+``` {r, include=FALSE}
+cat("\n", "Desviación estándar", "\n")
+apply(R2,2, sd)
+cat("\n", "Rango Medio", "\n")
+Rm = function(x)((max(x)+min(x))/2)
+apply(R2, 2, Rm) 
+```
+``` {r}
+par(mfrow = c(2,2))
+hist(R1$electrd_fosiles, col = 4, main = "Region Oceania", xlab = "Electricidad de origen fosil(kWh)", ylab = "Frecuencia")
+hist(R2$electrd_fosiles, col = 3, main = "Region Caribe", xlab = "Electricidad de origen fosil(kWh)", ylab = "")
+
+hist(R1$electrd_de_energ_renov, col = 4, main = "Region Oceania", xlab = "Electricidad de energias renovables(kWh)", ylab = "Frecuencia")
+hist(R2$electrd_de_energ_renov, col = 3, main = "Region Caribe", xlab = "Electricidad de energias renovables(kWh)", ylab = "")
+
+```
+
+En estos histogramas podemos ver la fruecuencia con la que aparece un dato en una de las bases de datos. COmo se puede notar las relaciones son muy diferentes entre ambos conjuntos. La primera tabla tiene un maximo de 250kWh mientras que la equivalente en la otra region apenas y llega a los 15kWh. Aun con esto podemos notar patrones interesantes. Uno de estos es como en ambos casos la gran mayoria de registros tienen un bajo numero de kWh cuando se trata de la produccion de energia renovables. Tambien, podemos notar como esta se va disminuyendo en frecuencia con respecto aumenta el numero kWh. 
+
+``` {r, include=FALSE}
+par(mfrow = c(1,2))
+boxplot(electrd_fosiles ~ region, data = M, col=3:4, main = "Electricidad de origen fosil")
+boxplot(electrd_de_energ_renov ~ region, data = M, col=3:4, main = "Electricidad de energias renovables")
+```
+``` {r}
+par(mfrow = c(2,2))
+boxplot(R1$electrd_fosiles, col=4, main = "Electricidad de origen fosil, Oceania", horizontal=TRUE)
+boxplot(R2$electrd_fosiles, col=3, main = "Electricidad de origen fosil, Caribe", horizontal=TRUE)
+
+boxplot(R1$electrd_de_energ_renov, col=4, main = "Electricidad de energias renovables, Oceania", horizontal=TRUE)
+boxplot(R2$electrd_de_energ_renov, col=3, main = "Electricidad de energias renovables, Caribe", horizontal=TRUE)
+```
+
+Igualmente, realizamos varios diagramas de caja para las mismas variables para la comparacion de ambos grupos de datos. En este caso podemos notar mucho mejor la dispercion de los datos, ya que los diaramas de caja en vez de estar centrados (como usualmente lo estan) se encuentran mayormente apoyados al lado izquierdo o abajo. Esto representa que la mayoria de los datos se encuentran en el lado de menor magnitud, mientras que existen algunos datos dispersos que se representan como puntos en el grafico. 
+
+``` {r, warning=FALSE, include=FALSE}
+correl = cor(R1);
+round(correl,3)
+correl = cor(R2);
+round(correl,3)
+```
+``` {r}
+plot(R1, col = "blue") 
+plot(R2, col = "blue") 
+
+```
+
+Finalmente, realizamos una matriz de graficos de dispersion para poder apreciar mayormente la relacion entre las variables. Este grafico nos impresiono debido a la alta cantidad de dispersión que existe en los datos. Inclusive entre los propios set de datos podemos ver como muchos de los graficos no siguen una tendencia lineal. Sin embargo, eso no signifca que no existan, en este caso las mas evidentes son la relacion entre electicidad de energias fosiles y las emosiones de CO2, lo cual no es una gran sorpresa. 
+
+Discusión y conclusiones.
+
+Tras la realizacion del analisis podemos encontrar diversas diferencias entre las dos regiones. La principal diferencia entre ambas es el tamaño de los paises dentro de la region. Oceania tiene una superficie significativamente mayor al del Caribe por lo que las magnitudes de datos no son taan significativas. Otra cosa que podemos observar es como los paises del caribe tienen una mayor dispersion de datos, mientras que los de oceania tienden a seguir una tendencia mas clara. Sin embargo, los datos del Caribe estan mas centralizados, mientras que los de Oceania tienden mayormente a los extremos. 
+
+Variable respuesta:
+● emisiones_CO₂_miles - El análisis la eligió como indicador principal de huella de carbono asociado al consumo eléctrico
+
+Variables explicativas:
+1. electrd_fosiles - El análisis mostró correlación casi perfecta con emisiones, siendo el predictor dominante
+2. electrd_de_energ_renov - El análisis explica que en países con alto despliegue renovable también crece la generación total (incluyendo fósiles)
+3. crecimiento_PIB - El análisis encontró influencia mínima en correlación, pero con efecto marginal en regresión (p ≈ 0.099)
+4. densidad_pobl_Km2 - El análisis reveló que mayores densidades se asocian a menores emisiones per cápita, posiblemente por economías de escala en infraestructura energética.
+
+Referencias.
+
+Orús, A. (2024). Las energías renovables en el mundo - Datos estadísticos. Statista. https://es.statista.com/temas/8542/las-energias-renovables-en-el-mundo/ 
+
+Gutiérrez, G. (s.f.). Producción global de energía renovable: estrategias para incrementar su impacto y sostenibilidad. Ecología Digital. https://ecologiadigital.bio/cuanta-energia-renovable-se-produce-actualmente-a-nivel-mundial/ 
+
+United Nations. (s.f.). Energías renovables: energías para un futuro más seguro. https://www.un.org/es/climatechange/raising-ambition/renewable-energy 
+
+Data Center Dynamics. (2024). ¿Cómo están evolucionando las energías renovables en el mundo?. https://www.datacenterdynamics.com/es/features/como-estan-evolucionando-las-energias-renovables-en-el-mundo/ 

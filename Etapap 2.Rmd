@@ -1,0 +1,97 @@
+---
+title: "Etapa 2"
+author: "Gil Brandon García Contreras - A01254164 | Fernando Emilio Soto Gallegos - A01641995  Jorge Eduardo Varela Muñiz - A01384569 | Maximo Cruz Olvera - a01723622"
+date: "2025-06-07"
+output: word_document
+---
+
+1. Los datos
+
+```{r}
+M = read.csv("datosEq5.csv")
+head(M, n=10)
+R1 = subset(M, M$region=="Oceania")[-1]
+R2 = subset(M, M$region=="Caribe")[-1]
+```
+
+2. Distribución de densidad empírica de las variables por región y su distribución normal teórica
+
+```{r}
+par(mfrow = c(2,5))
+for (columns in 2:11){
+x1 = R1[,columns]
+m1 = mean(x1)
+ds1 = sd(x1)
+
+hist(x1, freq=FALSE, col="pink3", main="Región Oceania", ylab="Frecuencia", xlab = names(R1)[columns])
+lines(density(x1), col="blue4", lwd=2)
+
+x = seq(m1-4*ds1, m1+4*ds1, 0.1)
+curve(dnorm(x, m1, ds1), add=TRUE, col="red2", lwd=2, lty = 2)
+legend("topright",  legend = c("empirica", "normal"), lty = c(1,2),  col = c("blue4", "red2") , cex=0.5)
+}
+
+
+par(mfrow = c(2,5))
+for (columns in 2:11){
+x2 = R2[,columns]
+m2 = mean(x2)
+ds2 = sd(x2)
+
+hist(x2, freq=FALSE, col="blue3", main="Región Caribe", ylab="Frecuencia", xlab = names(R2)[columns])
+lines(density(x2), col="pink4", lwd=2)
+
+x = seq(m2-4*ds2, m2+4*ds2, 0.1)
+curve(dnorm(x, m2, ds2), add=TRUE, col="red2", lwd=2, lty=2)
+legend("topright",  legend = c("empirica", "normal"), lty = c(1,2),  col = c("pink4", "red2") , cex=0.5)
+}
+```
+¿En qué se distingue la función de densidad del histograma realizado en la Etapa 1?
+La principal diferencia que se puede notar entre ambas etapas es la presencia de la densidad empírica y densidad normal. Durante la primera etapa únicamente se exploraban los histogramas visualmente, pero la presencia de las densidades nos permite saber cuál es el comportamiento de cada variable de mejor manera y con esto predecir su comportamiento.
+
+¿Los datos se comporten como una normal? 
+En la gran mayoría de las variables los resultados muestran que no se comportan como una normal, ya que los datos se encuentran bastante dispersos. Sin embargo, la una única variable que podemos inferir se comporta de manera normal es el crecimiento anual del PIB, debido a que su gráfica muestra resultados similares a la normal.
+
+
+3. Análisis de centralización y forma
+
+```{r}
+media_R1 = apply(R1, 2, mean)
+mediana_R1 = apply(R1, 2, median)
+Rm = function(x)((max(x)+min(x))/2) 
+Rm_R1 = apply(R1, 2, Rm)
+Centro_R1 = data.frame(media_R1, mediana_R1, Rm_R1)
+head(Centro_R1)
+
+media_R2 = apply(R2, 2, mean)
+mediana_R2 = apply(R2, 2, median)
+Rm_R2 = apply(R2, 2, Rm)
+Centro_R2 = data.frame(media_R2, mediana_R2, Rm_R2)
+head(Centro_R2)
+```
+
+¿Qué puedes decir sobre la simetría de las variables?
+Al igual que en la primera etapa se puede concluir que las variables son muy dispersas y poco simétricas. El primer set de datos se cuentan con medias y medianas completamente alejadas del rango central. La variable más cercana a su rango central es el porcentaje de energías renovables en el primer set de datos. Por otro lado, el segundo set otorga resultados más favorables con más variables centradas como la electricidad producida con combustibles fósiles, el acceso a la electricidad y el acceso a los combustibles limpio.
+
+
+4. QQ plot de las variables
+
+```{r}
+par(mfrow = c(2,5))
+for (columns in 2:11){
+x1 = R1[,columns] 
+qqnorm(x1, col="blue", pch=20, main="Región Oceania", sub= names(R1)[columns])
+qqline(x1, col="red")
+}
+
+par(mfrow = c(2,5))
+for (columns in 2:11){
+x2 = R2[,columns]
+qqnorm(x2, col="blue", pch=20, main="Región Caribe", sub= names(R2)[columns])
+qqline(x2, col="red")
+}
+
+```
+Interpretación de los graficos
+
+En este caso tenemos dos posibilidades de las gráficas. La primera es que los datos estén demasiado separados entre sí. Esto genera una línea demasiado puntiaguda que trata de adecuarse a los datos. Esto puede ser debido a la presencia de diferentes países y sus diferencias, aunque estén en la misma región. El segundo caso es uno favorable, ya que en ciertas variables se puede observar como los datos eximen una tendencia a la alta, la cual puede ser mejormente explorada. En conclusión, aunque existen datos que podrían ser explorados con una distribución normal, para la gran mayoría de estos no sería lo más apropiado. 

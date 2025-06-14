@@ -1,0 +1,127 @@
+---
+title: "Etapa 2 Reporte"
+author: "
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nGil Brandon García Contreras - A01254164 
+\n
+\nFernando Emilio Soto Gallegos - A01641995
+\n
+\nJorge Eduardo Varela Muñiz - A01384569
+\n
+\nMaximo Cruz Olvera - a01723622
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nEquipo 5
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nAnálisis estadístico
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nJosé Álvaro Gómez Pantoja
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nGrupo 317
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"
+date: "2025-06-07"
+output: word_document
+---
+
+# Metodologia
+
+La intención de la presente etapa es poder poner a prueba la hipótesis sobre el comportamiento de los datos que se desean explorar. A lo largo del desarrollo del reporte se construyeron y analizaron diversos gráficos con el fin de obtener evidencia visual que permitiera validar o replantear la hipótesis inicial. Dicha hipótesis establece que los datos analizados siguen una distribución normal, lo que implicaría ciertas características estadísticas esperadas para el correcto analisis de la información.
+
+Para poner a prueba esta suposición, se recurrió a una serie de herramientas gráficas que permiten inspeccionar visualmente si los datos se ajustan o no al comportamiento normal. La primera de estas herramientas fueron los histogramas, los cuales resultan útiles para observar la forma general de la distribución de los datos. Estos se emplearon tanto para analizar variables de forma individual como para realizar comparaciones entre diferentes conjuntos presentes en el estudio. En caso de que la distribución fuera efectivamente normal, se esperaría ver una forma simétrica y acampanada en los histogramas, semejante a una campana de Gauss, lo que apoyaría la validez de la hipótesis inicial.
+
+Adicionalmente, se construyeron gráficos Q-Q, cuya función principal es comparar los cuantiles de los datos observados con los cuantiles teóricos de una distribución normal. Si los puntos de estos gráficos se alinean de manera aproximadamente lineal, se puede considerar que existe evidencia a favor de la normalidad en los datos. Este comportamiento visual lineal sería indicativo de que los valores se distribuyen de manera cercana a lo esperado bajo una distribución normal, reforzando así la hipótesis planteada al inicio de esta etapa.
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(scipen=999)
+M = read.csv("datosEq5.csv")
+head(M, n=10)
+R1 = subset(M, M$region=="Oceania")[-1]
+R2 = subset(M, M$region=="Caribe")[-1]
+```
+
+```{r}
+par(mfrow = c(2,5))
+for (columns in 2:11){
+x1 = R1[,columns]
+m1 = mean(x1)
+ds1 = sd(x1)
+
+hist(x1, freq=FALSE, col="pink3", main="Región Oceania", ylab="Frecuencia", xlab = names(R1)[columns])
+lines(density(x1), col="blue4", lwd=2)
+
+x = seq(m1-4*ds1, m1+4*ds1, 0.1)
+curve(dnorm(x, m1, ds1), add=TRUE, col="red2", lwd=2, lty = 2)
+legend("topright",  legend = c("empirica", "normal"), lty = c(1,2),  col = c("blue4", "red2") , cex=0.5)
+}
+
+
+par(mfrow = c(2,5))
+for (columns in 2:11){
+x2 = R2[,columns] 
+m2 = mean(x2)
+ds2 = sd(x2)
+
+hist(x2, freq=FALSE, col="blue3", main="Región Caribe", ylab="Frecuencia", xlab = names(R2)[columns]) 
+lines(density(x2), col="pink4", lwd=2)
+
+x = seq(m2-4*ds2, m2+4*ds2, 0.1)
+curve(dnorm(x, m2, ds2), add=TRUE, col="red2", lwd=2, lty=2)
+legend("topright",  legend = c("empirica", "normal"), lty = c(1,2),  col = c("pink4", "red2") , cex=0.5)
+}
+```
+
+Mediante el uso del lenguaje de programación R se obtuvieron los siguientes resultados para las dos regiones que se están analizando en la presente etapa. Como se puede visualizar, los resultados obtenidos son mixtos. Actualmente, contamos con un análisis de diez variables en dos conjuntos de datos completamente distintos. De las veinte gráficas que se generan para este análisis únicamente dos cumplen con una distribución similar a una campana de Gauss, para ambos casos la gráfica con esta distribución fue la de la variable de crecimiento de PIB nacional. Esto nos podría inferir que esta es la única variable que cuentan con una relación normal. Sin embargo, para poder realizar un análisis más completo es necesario observar los datos desde diferentes ángulos. 
+
+```{r, include=FALSE}
+media_R1 = apply(R1, 2, mean)
+mediana_R1 = apply(R1, 2, median)
+Rm = function(x)((max(x)+min(x))/2) 
+Rm_R1 = apply(R1, 2, Rm)
+Centro_R1 = data.frame(media_R1, mediana_R1, Rm_R1)
+head(Centro_R1)
+
+media_R2 = apply(R2, 2, mean)
+mediana_R2 = apply(R2, 2, median)
+Rm_R2 = apply(R2, 2, Rm)
+Centro_R2 = data.frame(media_R2, mediana_R2, Rm_R2)
+head(Centro_R2)
+```
+
+```{r}
+par(mfrow = c(2,5))
+for (columns in 2:11){
+x1 = R1[,columns] 
+qqnorm(x1, col="blue", pch=20, main="Region Oceania", sub= names(R1)[columns])
+qqline(x1, col="red")
+}
+
+par(mfrow = c(2,5))
+for (columns in 2:11){
+x2 = R2[,columns]
+qqnorm(x2, col="blue", pch=20, main="Region Caribe", sub= names(R2)[columns])
+qqline(x2, col="red")
+}
+
+```
+
+Igualmente, utilizando el lenguaje de R creamos una serie de gráficos Q-Q donde Q representa al término cuantil. Estos gráficos tiene la intención de poder predecir la presencia de un comportamiento normal en un conjunto de datos. Al igual que en la primera parte de la metodología, se realizaron 20 gráficos, de los cuales se obtuvieron resultados mixtos. En el caso de la región de Oceanía se puede observar como los datos suelen estar bastante dispersos, con la excepción de algunas variables clave donde tratan de asemejar un comportamiento normal. Esto puede significar que los países de Oceanía son polorizantes. Por otro lado, en el caso del Caribe se puede observar como las variables se acercan mucho más al resultado esperado. No obstante, este no es precisamente ideal, ya que en muchos casos el comportamiento se dispara y no representa una distribución normal. 
+
+# Discusión y conclusiones
+
+A partir del análisis realizado en la etapa 2, se puede concluir que la mayoría de las variables evaluadas no presentan un comportamiento normal. Esto se observa tanto en los histogramas con curvas de densidad como en los gráficos Q-Q, donde se nota una notable dispersión de los datos y una falta de ajuste a la línea teórica de normalidad. Este patrón se repite en ambas regiones analizadas: Caribe y Oceanía.
+
+En cuanto a la normalidad y simetría de las variables, se destaca que en la mayoría de los casos las variables presentan asimetría y comportamientos atípicos. Las diferencias significativas entre media, mediana y rango medio evidencian que muchas de las distribuciones están sesgadas o tienen colas largas. La variable crecimiento del PIB muestra un comportamiento más cercano al de una distribución normal, más en la región del Caribe, lo cual se refleja en la forma más simétrica de su histograma y la alineación más cercana a la línea teórica en el gráfico Q-Q.
+
+Las variables identificadas como respuesta y regresoras en la Etapa 1, se observa que variables como energía renovable, electrificación por fuentes fósiles y PIB per cápita presentan comportamientos muy distintos entre regiones, lo que sugiere relaciones no lineales o influenciadas por factores externos. Por ejemplo, energía renovable en Oceanía tiene una distribución mucho más dispersa y asimétrica que en el Caribe. Variables como acceso a electricidad y acceso a combustibles limpios tienden a mostrar distribuciones más concentradas, aunque también con ciertos casos atípicos.
+
+Por lo tanto, el equipo concluye que la mayoría de las variables no siguen una distribución normal, por lo que deben considerarse otros métodos estadísticos que no dependan de este supuesto. También, se estima que el comportamiento de las variables varía significativamente entre regiones, por lo que su comparación puede llegar a ser complicada. Por último, se da a notar que existen algunas variables que pueden ajustarse mejor a modelos lineales, mientras que otras necesitan otro enfoque debido a su dispersión y asimetría. 

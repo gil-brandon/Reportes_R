@@ -1,0 +1,150 @@
+---
+title: "Etapa 3"
+author: "
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nGil Brandon García Contreras - A01254164 
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nEquipo 5
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nAnálisis estadístico
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nJosé Álvaro Gómez Pantoja
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+\n
+\nGrupo 317
+\n
+\n-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"
+date: "2025-06-12"
+output: word_document
+---
+
+# Introducción
+
+El presente reporte tiene la intención de ser la tercera etapa de la situación problema, la cual contara con la selección de una variable de interés para su posterior análisis. En este caso, la variable seleccionada fue el crecimiento anual del producto interno bruto de la región. Esta variable fue seleccionada debido al comportamiento anormal presentado en las etapas anteriores, lo cual despertó mi curiosidad personal con respecto a ella. Previamente, al momento de realizar los histogramas se pudo notar que esta variable contaba con una distribución que asemejaba una campana de gauss, lo cual es un claro distintivo de una distribución normal estándar. Esto me pareció extremadamente curioso debido a que fue la única variable que presentaba este comportamiento. A su vez, en las gráficas QQ mostraba una relación que me pareció digna de estudiar, donde la gran mayoría de los puntos se encontraban mayormente en el centro, con la línea regresora pasando por estos.
+
+Tengo la fortuna que esta variable se relacionaba directamente con la problemática planteada. Esto es debido a que en mi opinión existe una posible relación entre el crecimiento del producto interno bruto de un país y su uso de energías renovables. Esto debido a que comúnmente se relaciona el crecimiento económico de un país con su consumo de energía, el cual siempre suele ir de la mano con un mayor consumo de energías fósiles. Me gustaría poder saber si esta relación es real o meramente especulativa y si existen países que tengan un buen crecimiento anual con una gran inversión en energías renovables.
+
+# Metodología
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(scipen=999)
+M = read.csv("datosEq5.csv")
+head(M, n=10)
+R1 = subset(M, M$region=="Oceania")[-1]
+R2 = subset(M, M$region=="Caribe")[-1]
+x1 = R1$crecimiento_PIB
+x2 = R2$crecimiento_PIB
+```
+
+## Análisis Descriptivo
+
+El elegir la misma variable en ambas regiones facilitará el proceso de comparación entre las mismas. Para la realización del análisis descriptivo de la variable se utilizó la función *sumarry()* para poder ver las componentes principales de ambas regiones en orden de Oceanía y Caribe respectivamente.
+
+```{r}
+summary(x1)
+summary(x2)
+```
+
+Posterior a este análisis numérico se procedió a la realización de un análisis gráfico para el cual se utilizaron dos tipos de gráficas principales. El primero es el histograma, el cual resalta la antes mencionada del comportamiento de las variables donde cuentan con una distribución bastante similar a una campana de gauss. Por otro lado, también se creó un gráfico boxplot la cual nos puede mostrar la dispersión de los datos, la cual nos muestra como la gran mayoría de estos se encuentran en un rango de 0 a 5 con algunos casos como excepciones, tanto positivos como negativos.
+
+```{r}
+par(mfrow = c(1,2))
+hist(x1, col = 4, main = "Región Oceania", xlab = "Crecimiento PIB", ylab = "Frecuencia")
+hist(x2, col = 3, main = "Región Caribe", xlab = "Crecimieento PIB", ylab = "Frecuencia")
+```
+
+```{r}
+par(mfrow = c(1,2))
+boxplot(x1, col=4, main = "Región Oceania", xlab = "Crecimiento PIB")
+boxplot(x2, col=3, main = "Región Caribe", xlab = "Crecimieento PIB")
+```
+
+Toda la información recaudada durante el análisis descriptivo nos demuestra el comportamiento tan particular de la variable y nos da indicios de su posible uso para un modelo de regresión. También, nos será útil para la creación de la prueba de hipótesis en el futuro.
+
+## Prueba de hipotesis
+
+Para la creación de la prueba de hipótesis se siguieron una serie de pasos bastante concisos. Se empezó por establecer la hipótesis. Para poder realizar esta primera parte fue primordial realizar una investigación sobre el crecimiento del producto interno bruto anual mundial. Afortunadamente, este dato fue sencilla de encontrar gracias al Fondo Monetario Internacional (2025) el cual establece que el crecimiento del producto interno bruto es de 3.7% anual a nivel mundial durante el periodo 2000-2019. Se utilizó este dato para plantear la siguiente hipótesis nula y alternativa en la cual se decidio una relación de menor qué debido a que en ambos casos la media es menor al numero investigado.
+
+H0 = mu = 3.7\
+H1 = mu \< 3.7
+
+Debido a que estamos analizando la misma variable y en ambos casos la media resulta ser menor que la propuesta por el Fondo Monetario Internacional, se utilizó la misma hipótesis nula y alternativa para ambos casos. Utilizando estos parametros realizamos los calculos para obtener la z\* y el p-valor que utiliaremos durante el siguiente paso.
+
+```{r}
+mu = 3.7
+alfa = 0.04
+zf = qnorm(alfa)
+
+n1 = length(x1)
+m1 = mean(x1)
+s1 = sd(x1)
+sm1 = s1/sqrt(n1)
+ze1 = (m1-mu)/sm1 
+cat("z* =", ze1)
+valorp1 = pnorm(ze1) 
+cat("Valor p =",valorp1)
+
+n2 = length(x2)
+m2 = mean(x2)
+s2 = sd(x2)
+sm2 = s2/sqrt(n2)
+ze2 = (m2-mu)/sm2 
+cat("\nz* =", ze2)
+valorp2 = pnorm(ze2) 
+cat("Valor p =",valorp2)
+```
+
+Como siguiente paso se definirá la regla de decisión, la cual en este caso se obtiene del cálculo del p-valor donde se rechaza la hipótesis nula si es que el p-valor es menor que alfa. Para nuestro caso particular se nos pide que utilizamos un intervalo de confianza del 96% por lo que nuestra alfa es de 0.04. Esto nos lleva directamente al siguiente paso, el cual es el análisis de la muestra en donde podemos observar que tenemos dos casos diferentes. En el primero, la región de Oceanía demuestra un valor mayor en el p-valor, por lo que no se puede rechazar la hipótesis nula, indicando que la media de Oceanía sí corresponde a la media mundial. Por otro lado, tenemos el caso de la región del Caribe donde su p-valor es menor que alfa, por lo que se puede rechazar la hipótesis nula, lo cual nos hace aceptar la hipótesis alternativa de que la media del Caribe es menor que la media mundial.
+
+## Intervalos de Confianza
+
+Con la intención de seguir explorando la variable se llevó a cabo un análisis de los intervalos de confianza en donde se realizó el proceso para calcular los intervalos en donde se aceptaría la hipótesis nula. Podemos ver como para el caso de Oceanía el 3.7% se encuentra dentro de su intervalo de confianza. Esto es contrario a lo sucedido con la región del Caribe, en donde el 3.7% no entra dentro del intervalo. Esto se puede observar mejor gráficamente en la gráfica con ambos intervalos.
+
+```{r}
+nc = 1-alfa 
+z = abs(zf)
+A1 = m1-z*sm1   
+B1 = m1+z*sm1   
+cat("La verdadera media está entre", A1, "y", B1, "con un nivel de confianza del",100*nc,"%\n")
+
+nc = 1-alfa 
+z = abs(zf)
+A2 = m2-z*sm2   
+B2 = m2+z*sm2   
+cat("La verdadera media está entre", A2, "y", B2, "con un nivel de confianza del",100*nc,"%")
+```
+
+```{r}
+plot(0, ylim=c(0,3), xlim=c(A2,B1), yaxt="n", ylab="Oceania y Caribe", xlab="Crecimiento PIB", main="Intervalos de Confianza")
+arrows(A1, 1, B1, 1, angle=90, code=3, length = 0.1, lwd = 2)
+arrows(A2, 2, B2, 2, angle=90, code=3, length = 0.1, lwd = 2)
+points(m1, 1, pch=19, cex=1.1)
+points(m2, 2, pch=19, cex=1.1)
+```
+
+# Discusión y conclusiones
+
+A lo largo de este análisis se abordó el comportamiento de la variable del crecimiento anual del producto interno bruto en las dos regiones que se propusieron a estudiar, Oceanía y Caribe. El análisis descriptivo inicial mostró que ambas regiones presentan un comportamiento relativamente similar en términos de dispersión y tendencia central, con medias que rondaban entre el 2.5% y 3.2%. Visualmente, se logró identificar una distribución que se asemeja a la normal, especialmente en el caso de Oceanía gracias al uso de histogramas. Esta primera aproximación sugería que el crecimiento del PIB en ambas regiones podría estar dentro de un rango estable, aunque posteriormente se dedujo que podría estar debajo promedio mundial reportado por el Fondo Monetario Internacional.
+
+Sin embargo, el análisis inferencial permitió profundizar y contrastar estas observaciones iniciales. A través de la prueba de hipótesis, se buscó comprobar si las medias regionales estaban Poe debajo del valor de referencia mundial. Los resultados obtenidos indicaron una diferencia importante entre ambas regiones. Para Oceanía, el p-valor fue superior al nivel de significancia, lo que impidió rechazar la hipótesis nula. Esto sugiere que el crecimiento económico de Oceanía no difiere significativamente del promedio mundial. En contraste, para el Caribe, el p-valor fue menor que alfa, lo que permitió rechazar la hipótesis nula y aceptar que el crecimiento del PIB en esta región sí es significativamente menor al promedio mundial. Esta conclusión se vio reforzada por el análisis de los intervalos de confianza, mientras que en Oceanía el valor de 3.7% se encontraba dentro del intervalo, en el Caribe se encontraba fuera del mismo.
+
+La comparación entre el análisis descriptivo y el inferencial demuestra la importancia de no quedarse únicamente con estadísticas resumidas o visuales. Aunque ambos análisis señalaban un posible comportamiento menor al promedio global, solo el análisis inferencial fue capaz de confirmar con respaldo estadístico que dicha diferencia es significativa en el caso del Caribe, mientras que no lo es para la región de Oceanía. Esta diferencia pone en evidencia por qué es crucial complementar una exploración descriptiva con un análisis inferencial. Mientras que el primero describe lo que se observa, el segundo permite validar si esas observaciones son estadísticamente relevantes o podrían ser producto de los sesgos personales y el azar.
+
+En conclusión, este estudio permitió identificar una diferencia real en el crecimiento económico del Caribe respecto al promedio mundial, mientras que Oceanía se mantiene dentro de los márgenes esperados. Estos hallazgos abren la puerta a nuevas investigaciones que puedan explorar los factores detrás de estas diferencias, incluyendo el papel del uso de energías renovables y otros elementos estructurales que afectan el crecimiento económico regional.
+
+# **Autoevaluación**
+
+Me sentí bastante realizado al momento de desarrollar esta actividad. Me parece que tenía un propósito de aprendizaje para poder ver el uso en la vida práctica de las tecnologías aprendidas en la clase. Me parece que se siguió una metodología bastante buena donde la propia redacción de las actividades te ayudaba a poder realizarlas dando un buen acompañamiento. La verdad es que nunca cambie de planes durante este proyecto, me parece que todas las decisiones que se tomaron fueron bien pensadas desde un principio y eso ocasiono que no hubiera necesidad de realizar cambios. Me parece que desde un inicio tenía bien claro el objetivo de la actividad, lo cual me permitió centrarme en ella. Finalmente, me parece que el objetivo se cumplió debido a que me siento mucho más preparado para utilizar R en mi vida diaria y aprendí a reconocer patrones y poder probar si mis conclusiones personales son verídicas. Me parece que las cosas más importantes que aprendí fueron los comandos de R, las pruebas de hipótesis y él concomiendo sobre el cambio climático, el cual es una temática muy relevante en la actualidad.
+
+# **Referencias**
+
+Fondo Monetario Internacional. (2025). Crecimiento mundial dispar e incierto. <https://www.imf.org/es/Publications/WEO/Issues/2025/01/17/world-economic-outlook-update-january-2025>

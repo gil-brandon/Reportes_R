@@ -1,0 +1,95 @@
+---
+title: "Etapa 3"
+author: "Gil"
+date: "2025-06-12"
+output: word_document
+---
+
+1. La variable
+
+```{r}
+M = read.csv("datosEq5.csv")
+head(M, n=10)
+R1 = subset(M, M$region=="Oceania")[-1]
+R2 = subset(M, M$region=="Caribe")[-1]
+x1 = R1$crecimiento_PIB
+x2 = R2$crecimiento_PIB
+```
+```{r}
+summary(x1)
+summary(x2)
+```
+```{r}
+par(mfrow = c(1,2))
+hist(x1, col = 4, main = "Región Oceania", xlab = "Crecimiento PIB", ylab = "Frecuencia")
+hist(x2, col = 3, main = "Región Caribe", xlab = "Crecimieento PIB", ylab = "Frecuencia")
+```
+
+```{r}
+par(mfrow = c(1,2))
+boxplot(x1, col=4, main = "Región Oceania", xlab = "Crecimiento PIB")
+boxplot(x2, col=3, main = "Región Caribe", xlab = "Crecimieento PIB")
+```
+
+2. Prueba de hipótesis 
+H0 = mu = 3.7
+H1 = mu < 3.7
+
+H0 = mu = 3.7
+H1 = mu < 3.7
+
+```{r}
+mu = 3.7
+alfa = 0.04
+zf = qnorm(alfa)
+
+n1 = length(x1)
+m1 = mean(x1)
+s1 = sd(x1)
+sm1 = s1/sqrt(n1)
+ze1 = (m1-mu)/sm1 
+cat("z* =", ze1)
+valorp1 = pnorm(ze1) 
+cat("Valor p =",valorp1)
+library(BSDA) 
+z.test(x1, sigma.x = s1, mu = mu, alternative = "less",  conf.level = 0.96)
+
+n2 = length(x2)
+m2 = mean(x2)
+s2 = sd(x2)
+sm2 = s2/sqrt(n2)
+ze2 = (m2-mu)/sm2 
+cat("z* =", ze2)
+valorp2 = pnorm(ze2) 
+cat("Valor p =",valorp2)
+library(BSDA) 
+z.test(x2, sigma.x = s2, mu = mu, alternative = "less",  conf.level = 0.96)
+```
+3. Intervalos de Confianza (Opcional: dos puntos sobre la calificación final) 
+
+```{r}
+nc = 1-alfa 
+z = abs(zf)
+A1 = m1-z*sm1   
+B1 = m1+z*sm1   
+cat("La verdadera media está entre", A1, "y", B1, "con un nivel de confianza del",100*nc,"%\n")
+
+nc = 1-alfa 
+z = abs(zf)
+A2 = m2-z*sm2   
+B2 = m2+z*sm2   
+cat("La verdadera media está entre", A2, "y", B2, "con un nivel de confianza del",100*nc,"%")
+```
+```{r}
+plot(0, ylim=c(0,3), xlim=c(A2,B1), yaxt="n", ylab="Oceania y Caribe", xlab="Crecimiento PIB", main="Intervalos de Confianza")
+arrows(A1, 1, B1, 1, angle=90, code=3, length = 0.1, lwd = 2)
+arrows(A2, 2, B2, 2, angle=90, code=3, length = 0.1, lwd = 2)
+points(m1, 1, pch=19, cex=1.1)
+points(m2, 2, pch=19, cex=1.1)
+```
+```{r}
+qnorm(0.025)
+pnorm(109, 108, 5)
+pnorm(0.05)
+```
+
